@@ -116,31 +116,40 @@ NOW REMOVE THE FOLLOWING 2 LINES AND SAVE CHANGES
   - kubernetes.io/pv-protection
 
 c)	Delete the pvc pod so that it will be created properly.
+
 oc delete pv $(oc get pv|grep elasticsearch-master-backups|awk '{print $1}') --force --grace-period=0
 
 d)	Backup the elastic search pod 
+
 oc get pvc elasticsearch-master-backups -n cpd-tenant -o json | jq ’del(.metadata.annotations)’|jq ’del(.metadata.creationTimestamp)’|jq ’del(.status)’|jq ’del(.metadata.finalizers)’|jq ’del(.metadata.managedFields)’|jq ’del(.spec.volumeName)’|jq ’del(.metadata.manager)’|jq ’del(.metadata.resourceVersion)’|jq ’del(.metadata.selfLink)’|jq ‘del(.metadata.uid)’ > elasticsearch-master-backups.json
 
 e)	Edit/Change elastic search pod to not use the pvc
+
 oc edit pvc elasticsearch-master-backups
 
 NOW REMOVE THE FOLLOWING 2 LINES AND SAVE CHANGES
+
   finalizers:
   - kubernetes.io/pv-protection
 
 f)	Delete the elastic search pod.
+
 oc delete -n cpd-tenant -f elasticsearch-master-backups.json
 
 g)	Create the elastic search pod
+
 oc create -n cpd-tenant -f elasticsearch-master-backups.json
 
 h)	Scale up the elastic search pods.
+
 oc scale sts elasticsearch-master --replicas=3
 
-i)	Validate the cluster heath.
+i)	Validate the cluster health.
+
 oc get pods -A | grep -v Run | grep -v Completed
 
 10.	Validate target cluster health.
+
 oc exec -i dv-engine-0 -n <NAMESPCE> -c dv-engine -- bash -c "/opt/dv/current/liveness.sh --verbose"
 
 11.	Validate queries against DV tables and caches from source clusters work without issues.
@@ -148,6 +157,7 @@ oc exec -i dv-engine-0 -n <NAMESPCE> -c dv-engine -- bash -c "/opt/dv/current/li
 12.	There are 2 routes returned from:  oc get routes -n cpd-tenant
 
 13.	Use the cp4d-route
+
 NAME         HOST/PORT                                             PATH   SERVICES        PORT                   TERMINATION            WILDCARD
 cp4d-route   cp4d-route-zzz.apps.ocp452-px255-fips07.cp.fyre.ibm.com   ibm-nginx-svc   ibm-nginx-https-port   passthrough            
 zzz-cpd         zzz-cpd-zzz.apps.ocp452-px255-fips07.cp.fyre.ibm.com         ibm-nginx-svc   ibm-nginx-https-port   passthrough/Redirect
