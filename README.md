@@ -6,7 +6,7 @@ Cloning from the Source OCP/CP4D cluster and Reinstate to new OCP cluster has th
 
 ## CLONE
 
-## Pre-requisites for Cloning
+### Pre-requisites for Cloning
 Pre-requisites before running cloner utility.
 
 1.	S3 /ICOS where AIP user can create a bucket and save the clones to
@@ -19,22 +19,23 @@ Pre-requisites before running cloner utility.
 8.	Ensure all the pod services are in healthy state before starting the clone.
 9.	All other DV, DMC pods are also running.
 
-## Always use the latest script docker images as they have latest scripts.
+### Always use the latest script docker images as they have latest scripts.
 
 docker pull quay.io/drangar_us/cpc:cp4d.3.5
 docker pull quay.io/drangar_us/sincr:v2
 
-If in doubt you can delete and pull again
+#### If in doubt you can delete and pull again
 
+##### To check the docker images
 docker image -a
 
-Remove the old image and pull again always if in doubt.
+##### Remove the old image and pull again always if in doubt.
 
 docker rm <container id>
 docker rm <container id> --force (If needed)
 sudo podman rmi <container image id> --force (if needed)
 
-## Cloning from Existing cluster
+### Cloning from Existing cluster
 
 To run the cloner, you will use the following syntax (You can use docker or podman)
 
@@ -43,6 +44,7 @@ docker run -e ACTION=CLONE -e CLEANUP=1 -e INTERNALREGISTRY=1 -e SERVER=<OC LOGI
 E.G. Command
 -
   bash-3.2$ cat cloneawsbackup_new.sh 
+  
   sudo podman run -e ACTION=CLONE -e CLEANUP=1 -e INTERNALREGISTRY=1 -e SERVER=https://api.ocp-dv-03.osonawsonline.com:6443 -e TOKEN=sha256~0o-C8TtctoYSWv459O6QYD7s0KQU0bFuTX1fveHPjVo -e SINCRIMAGE=quay.io/drangar_us/sincr:v2 -e PROJECT=cpd-tenant -e COSBUCKET=aipawsbackuppravin -e COSAPIKEY=b737054a3ed54cf0812ddbd56c5efe8d -e COSSECRETKEY=55a9a6c6d7fc9e70c4038c54818b88b3f3fed52874cd47e9 -e COSREGION=au-syd -e COSENDPOINT=https://s3.au-syd.cloud-object-storage.appdomain.cloud -it quay.io/drangar_us/cpc:cp4d.3.5
 
 ### To check the backups on the S3 /ICOS storage start with clean bucket.
@@ -53,10 +55,10 @@ aws --endpoint-url=https://s3.au-syd.cloud-object-storage.appdomain.cloud s3 ls 
 
 ## REINSTATE
 
-
-Pre-requisites for Reinstate.
+### Pre-requisites for Reinstate.
 
 Pre-requisites before running the reinstate utility.
+
 1.	Ensure you are running this from the same bastion node where you ran the clone command earlier and it has access to the new cluster.
 2.	If using external registry, the target OCP cluster would already have been configured to use the external OpenShift registry.
 3.	If using internal registry then you will need to follow the procedure below
@@ -65,17 +67,18 @@ Pre-requisites before running the reinstate utility.
 6.	Then load these images to the targe cluster from bastion node.
 7.	Download the matching version of cpd-cli to this bastion node from the following link if not already done https://github.com/IBM/cpd-cli/releases
 
-Install the Patch 261/263 using the procedure shared earlier.
+### Install the Patch 261/263 using the procedure shared earlier.
+
 1.	Use the steps 1-4 a only (Patch 261)
- 
 2.	Use the steps 1-4 a only (Patch 263)
  
-If using External Registry (Currently Terraform scripts are being enhanced)
+### If using External Registry (Currently Terraform scripts are being enhanced)
 
 In this approach the target cluster already has access to registry to download the images directly from this internet registry and hence no need to download.
+
 If using internal Registry, we reinstate with INTERNALREGISTRY=1 (pre-load images) otherwise INTERNALREGISTRY=0
 
-Reinstate for new OpenShift cluster with OCP installed. 
+### Reinstate for new OpenShift cluster with OCP installed. 
 
 1.	Assume that the new cluster has CP4D 3.5.2 installed with DV, DMC etc.
 2.	Then the reinstate command with load the images from either internal or external registry.
@@ -87,12 +90,15 @@ Reinstate for new OpenShift cluster with OCP installed.
 docker run -e REGISTRYPROJECT=<cpd-meta-ops> -e ICR_KEY=<KEY> -e TARGET_REGISTRY==$(oc get route -n openshift-image-registry | grep image-registry | awk '{print $2}') -e TARGET_REGISTRY_USER=$(oc whoami) -e TARGET_REGISTRY_PASSWORD=$(oc whoami -t) -e CLEANUP=0/1 -e ACTION=REINSTATE -e INTERNALREGISTRY=1 -e SERVER=<OC LOGIN SERVER> -e TOKEN=<OC LOGIN TOKEN> -e SINCRIMAGE=quay.io/drangar_us/sincr:v2 -e PROJECT=<OC PROJECT NAME> -e COSBUCKET=<S3 BUCKET NAME> -e COSAPIKEY=<S3 ACCESS KEY> -e COSSECRETKEY=<S3 SECRET KEY> -e COSREGION=<S3 REGION> -e COSENDPOINT=<S3 END POINT> -it quay.io/drangar_us/cpc:cp4d.3.5 
 
 E.G. Command
+
 bash-3.2$ cat cloneawsreinstate_new.sh 
+
 sudo podman run -e REGISTRYPROJECT=cpd-meta-ops -e CLEANUP=0 -e ICR_KEY=eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJJQk0gTWFya2V0cGxhY2UiLCJpYXQiOjE2MTM1NjQxMTUsImp0aSI6ImFhYmI4NDNhYmE3NDQ4NGZhNzhiYzRlODJjOWRmMjQzIn0.2KVoSRLrAY522wXJiH0fKIVXohV-ZxECXDHhry9IuIo -e TARGET_REGISTRY=$(oc get route -n openshift-image-registry | grep image-registry | awk '{print $2}') -e TARGET_REGISTRY_USER=$(oc whoami) -e TARGET_REGISTRY_PASSWORD=$(oc whoami -t) -e ACTION=REINSTATE -e INTERNALREGISTRY=1 -e SERVER=https://api.ocp-dv-02.osonawsonline.com:6443 -e TOKEN=sha256~MSHyLqzxdIcfC1M7qx0utUn_Qsnbzib92EZ3cavF-3U -e SINCRIMAGE=quay.io/drangar_us/sincr:v2 -e PROJECT=cpd-tenant -e COSBUCKET=aipawsbackuppravin -e COSAPIKEY=b737054a3ed54cf0812ddbd56c5efe8d -e COSSECRETKEY=55a9a6c6d7fc9e70c4038c54818b88b3f3fed52874cd47e9 -e COSREGION=au-syd -e COSENDPOINT=https://s3.au-syd.cloud-object-storage.appdomain.cloud -it quay.io/drangar_us/cpc:cp4d.3.5
 
 7.	If any Accenture specific patches are used, then those patches need to be applied to the cluster as described in the above section (Patch 263 or 261) 
 
 8.	Validate cluster health.
+
 oc get pods -A | grep -v Run | grep -v Completed
 
 Check all pods are in running or completed state.
@@ -136,17 +142,20 @@ oc get pods -A | grep -v Run | grep -v Completed
 
 10.	Validate target cluster health.
 oc exec -i dv-engine-0 -n <NAMESPCE> -c dv-engine -- bash -c "/opt/dv/current/liveness.sh --verbose"
+
 11.	Validate queries against DV tables and caches from source clusters work without issues.
+
 12.	There are 2 routes returned from:  oc get routes -n cpd-tenant
+
 13.	Use the cp4d-route
 NAME         HOST/PORT                                             PATH   SERVICES        PORT                   TERMINATION            WILDCARD
 cp4d-route   cp4d-route-zzz.apps.ocp452-px255-fips07.cp.fyre.ibm.com   ibm-nginx-svc   ibm-nginx-https-port   passthrough            
 zzz-cpd         zzz-cpd-zzz.apps.ocp452-px255-fips07.cp.fyre.ibm.com         ibm-nginx-svc   ibm-nginx-https-port   passthrough/Redirect
-Reinstate for new OpenShift cluster with OCP and CP4D pre-installed.
+
+### Reinstate for new OpenShift cluster with OCP and CP4D pre-installed.
 
 1.	We assume that the cpd-meta-ops already exists with operator pods.
 2.	If you already have the OCP cluster with CP4D pre-installed, then you could choose to reinstate the cluster in the new namespace cpd-tenant-new.
 3.	Or you can drop the existing cpd-tenant namespace and reinstate the cluster into the same namespace. 
 4.	You may need to wait for 10 minutes for this drop to happen correctly.
 5.	Follow the similar commands as above.
-
