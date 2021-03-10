@@ -6,14 +6,9 @@ Cloning from the Source OCP/CP4D cluster and Reinstate to new OCP cluster has th
 
 ## CLONE
 
-
-## REINSTATE
-
-
-
-
-Pre-requisites for Cloning
+## Pre-requisites for Cloning
 Pre-requisites before running cloner utility.
+
 1.	S3 /ICOS where AIP user can create a bucket and save the clones to
 2.	OCP 4.5.6 or higher cluster with OCP/CP4D/DV/DMC services installed.
 3.	Run the oc login for the existing OCP/CP4D cluster.
@@ -23,32 +18,42 @@ Pre-requisites before running cloner utility.
 7.	Ensure the cpd-install-operator on AWS source cluster is up and running.
 8.	Ensure all the pod services are in healthy state before starting the clone.
 9.	All other DV, DMC pods are also running.
-Always use the latest script docker images as they have latest scripts.
+
+## Always use the latest script docker images as they have latest scripts.
+
 docker pull quay.io/drangar_us/cpc:cp4d.3.5
 docker pull quay.io/drangar_us/sincr:v2
 
 If in doubt you can delete and pull again
+
 docker image -a
 
 Remove the old image and pull again always if in doubt.
+
 docker rm <container id>
 docker rm <container id> --force (If needed)
 sudo podman rmi <container image id> --force (if needed)
-Cloning from Existing cluster
+
+## Cloning from Existing cluster
 
 To run the cloner, you will use the following syntax (You can use docker or podman)
 
 docker run -e ACTION=CLONE -e CLEANUP=1 -e INTERNALREGISTRY=1 -e SERVER=<OC LOGIN SERVER> -e TOKEN=<OC LOGIN TOKEN> -e SINCRIMAGE=quay.io/drangar_us/sincr:v2 -e PROJECT=<OC PROJECT NAME> -e COSBUCKET=<S3 BUCKET NAME> -e COSAPIKEY=<S3 ACCESS KEY> -e COSSECRETKEY=<S3 SECRET KEY> -e COSREGION=<S3 REGION> -e COSENDPOINT=<S3 END POINT> -it quay.io/drangar_us/cpc:cp4d.3.5 
 
 E.G. Command
-bash-3.2$ cat cloneawsbackup_new.sh 
-sudo podman run -e ACTION=CLONE -e CLEANUP=1 -e INTERNALREGISTRY=1 -e SERVER=https://api.ocp-dv-03.osonawsonline.com:6443 -e TOKEN=sha256~0o-C8TtctoYSWv459O6QYD7s0KQU0bFuTX1fveHPjVo -e SINCRIMAGE=quay.io/drangar_us/sincr:v2 -e PROJECT=cpd-tenant -e COSBUCKET=aipawsbackuppravin -e COSAPIKEY=b737054a3ed54cf0812ddbd56c5efe8d -e COSSECRETKEY=55a9a6c6d7fc9e70c4038c54818b88b3f3fed52874cd47e9 -e COSREGION=au-syd -e COSENDPOINT=https://s3.au-syd.cloud-object-storage.appdomain.cloud -it quay.io/drangar_us/cpc:cp4d.3.5
+-
+  bash-3.2$ cat cloneawsbackup_new.sh 
+  sudo podman run -e ACTION=CLONE -e CLEANUP=1 -e INTERNALREGISTRY=1 -e SERVER=https://api.ocp-dv-03.osonawsonline.com:6443 -e TOKEN=sha256~0o-C8TtctoYSWv459O6QYD7s0KQU0bFuTX1fveHPjVo -e SINCRIMAGE=quay.io/drangar_us/sincr:v2 -e PROJECT=cpd-tenant -e COSBUCKET=aipawsbackuppravin -e COSAPIKEY=b737054a3ed54cf0812ddbd56c5efe8d -e COSSECRETKEY=55a9a6c6d7fc9e70c4038c54818b88b3f3fed52874cd47e9 -e COSREGION=au-syd -e COSENDPOINT=https://s3.au-syd.cloud-object-storage.appdomain.cloud -it quay.io/drangar_us/cpc:cp4d.3.5
 
-To check the backups on the S3 /ICOS storage start with clean bucket.
+### To check the backups on the S3 /ICOS storage start with clean bucket.
 
 aws --endpoint-url=https://s3.au-syd.cloud-object-storage.appdomain.cloud s3 ls s3://aipawsbackuppravin/
 
 aws --endpoint-url=https://s3.au-syd.cloud-object-storage.appdomain.cloud s3 ls –summarize s3://aipawsbackuppravin/
+
+## REINSTATE
+
+
 Pre-requisites for Reinstate.
 
 Pre-requisites before running the reinstate utility.
