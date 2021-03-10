@@ -1,7 +1,8 @@
 # CP4DAWSCLONE
 
 Cloning & Reinstate between 2 AWS CP4D instances
-  Cloning from the Source OCP/CP4D cluster and Reinstate to new OCP cluster has the following steps.
+
+Cloning from the Source OCP/CP4D cluster and Reinstate to new OCP cluster has the following steps.
 
 ## CLONE
 
