@@ -166,7 +166,9 @@ zzz-cpd         zzz-cpd-zzz.apps.ocp452-px255-fips07.cp.fyre.ibm.com         ibm
 
 14.	Following errors can be neglected
 
-![alt text](https://github.com/pravinkedia/CP4DAWSCLONE/blob/main/Error_to_neglect.png?raw=true)
+![alt text](https://github.com/pravinkedia/CP4DAWSCLONE/blob/main/Errors_to_neglect.png?raw=true)
+
+(https://github.com/pravinkedia/CP4DAWSCLONE/blob/main/Errors_to_neglect.png)
 
 ### Reinstate for new OpenShift cluster with OCP and CP4D pre-installed.
 
