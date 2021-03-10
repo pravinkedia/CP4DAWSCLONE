@@ -159,7 +159,9 @@ oc exec -i dv-engine-0 -n <NAMESPCE> -c dv-engine -- bash -c "/opt/dv/current/li
 13.	Use the cp4d-route
 
 NAME         HOST/PORT                                             PATH   SERVICES        PORT                   TERMINATION            WILDCARD
+
 cp4d-route   cp4d-route-zzz.apps.ocp452-px255-fips07.cp.fyre.ibm.com   ibm-nginx-svc   ibm-nginx-https-port   passthrough            
+
 zzz-cpd         zzz-cpd-zzz.apps.ocp452-px255-fips07.cp.fyre.ibm.com         ibm-nginx-svc   ibm-nginx-https-port   passthrough/Redirect
 
 ### Reinstate for new OpenShift cluster with OCP and CP4D pre-installed.
