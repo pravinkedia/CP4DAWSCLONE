@@ -4,6 +4,12 @@ Cloning & Reinstate between 2 AWS CP4D instances
 
 Cloning from the Source OCP/CP4D cluster and Reinstate to new OCP cluster has the following steps.
 
+## New Developments and Enhancements
+
+### 11-03-2021
+1. We now have option to pass this as a login/Token or OC user/password options in the clone and reinstate tool.
+2. The logs are now stored on S3
+
 ## CLONE
 
 ### Pre-requisites for Cloning
@@ -14,10 +20,11 @@ Pre-requisites before running cloner utility.
 3.	Run the oc login for the existing OCP/CP4D cluster.
 4.	Install podman/docker/jq utility if not already exists on the bastion node.
 5.	From the oc login you will get the SERVER and TOKEN parameters we need.
-6.	Install the docker on the machine host from which you are going to run the commands. This can be a bastion node in the AIP AWS environment or any node from which both the source and target OCP/CP4D clusters are accessible.
-7.	Ensure the cpd-install-operator on AWS source cluster is up and running.
-8.	Ensure all the pod services are in healthy state before starting the clone.
-9.	All other DV, DMC pods are also running.
+6.	OR we have the option now to pass the user and password to the tool.
+7.	Install the docker on the machine host from which you are going to run the commands. This can be a bastion node in the AIP AWS environment or any node from which both the source and target OCP/CP4D clusters are accessible.
+8.	Ensure the cpd-install-operator on AWS source cluster is up and running.
+9.	Ensure all the pod services are in healthy state before starting the clone.
+10.	All other DV, DMC pods are also running.
 
 ### Always use the latest script docker images as they have latest scripts.
 
@@ -40,6 +47,13 @@ sudo podman rmi <container image id> --force (if needed)
 To run the cloner, you will use the following syntax (You can use docker or podman)
 
 docker run -e ACTION=CLONE -e CLEANUP=1 -e INTERNALREGISTRY=1 -e SERVER=<OC LOGIN SERVER> -e TOKEN=<OC LOGIN TOKEN> -e SINCRIMAGE=quay.io/drangar_us/sincr:v2 -e PROJECT=<OC PROJECT NAME> -e COSBUCKET=<S3 BUCKET NAME> -e COSAPIKEY=<S3 ACCESS KEY> -e COSSECRETKEY=<S3 SECRET KEY> -e COSREGION=<S3 REGION> -e COSENDPOINT=<S3 END POINT> -it quay.io/drangar_us/cpc:cp4d.3.5 
+
+E.G. Command
+-
+
+  podman run -e ACTION=CLONE -e INTERNALREGISTRY=0 -e CLEANUP=1 -e SERVER=https://api.drtest2.cp.fyre.ibm.com:6443 -e OCUSER=kubeadmin -e OCPASSWORD=XXXXXXXXXXXXXXXXXX -e SINCRIMAGE=quay.io/drangar_us/sincr:v2 -e PROJECT=streams -e COSBUCKET=mar9drdemoc -e COSAPIKEY=AAAAAAAAAAAA -e COSSECRETKEY=BBBBBBBBBBBBB -e COSREGION=us-south -e COSENDPOINT=https://s3.us-south.cloud-object-storage.appdomain.cloud -it quay.io/drangar_us/cpc:cp4d.3.5
+
+OR
 
 E.G. Command
 -
