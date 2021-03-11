@@ -184,6 +184,20 @@ zzz-cpd         zzz-cpd-zzz.apps.ocp452-px255-fips07.cp.fyre.ibm.com         ibm
 
 (https://github.com/pravinkedia/CP4DAWSCLONE/blob/main/Errors_to_neglect.png)
 
+15. Check and Delete the jobs that are hanging from the clone reinstate process
+
+check the left over pods
+
+oc get pods -A | grep -v Completed | grep 0/
+
+Find the left over jobs
+
+oc get jobs -A  | grep <based on above list>
+
+Delete the left over jobs
+
+oc delete job <job names>
+  
 ### Reinstate for new OpenShift cluster with OCP and CP4D pre-installed.
 
 1.	We assume that the cpd-meta-ops already exists with operator pods.
